@@ -53,11 +53,13 @@ def test_default_steady_state_delta_t_at_1c_is_independent_of_pack_size():
     delta_large = steady_state_delta(1000.0)
 
     for delta in (delta_small, delta_medium, delta_large):
-        assert 0.0 < delta < 5.0, f"unexpected steady-state ΔT: {delta} K"
+        assert 0.0 < delta < 1.0, f"unexpected steady-state ΔT: {delta} K"
 
+    # The scaling math is designed to make this ratio identically 1.0 in the
+    # continuous limit — a few percent of discretisation slack is plenty.
     largest = max(delta_small, delta_medium, delta_large)
     smallest = min(delta_small, delta_medium, delta_large)
-    assert largest / smallest < 2.0
+    assert largest / smallest < 1.05
 
 
 def test_default_battery_does_not_thermally_derate_at_1c():

@@ -8,6 +8,7 @@ from dertwin.core.engine import SimulationEngine
 from dertwin.controllers.device_controller import DeviceController
 from dertwin.core.registers import RegisterMap
 
+from dertwin.devices.bess.battery import BatteryLimits
 from dertwin.devices.bess.simulator import BESSSimulator
 from dertwin.devices.pv.simulator import PVSimulator
 from dertwin.devices.energy_meter.simulator import EnergyMeterSimulator
@@ -197,15 +198,16 @@ class SiteController:
         dtype = asset_cfg["type"]
 
         if dtype == "bess":
-            from dertwin.devices.bess.battery import BatteryLimits
-
-            soc_limits_cfg = asset_cfg.get("soc_limits") or {}
-            limits = BatteryLimits(
-                soc_lower_limit_1=soc_limits_cfg.get("lower_1", 25.0),
-                soc_lower_limit_2=soc_limits_cfg.get("lower_2", 20.0),
-                soc_upper_limit_1=soc_limits_cfg.get("upper_1", 85.0),
-                soc_upper_limit_2=soc_limits_cfg.get("upper_2", 90.0),
-            )
+            soc_limits_cfg = asset_cfg.get("soc_limits")
+            limits: Optional[BatteryLimits] = None
+            if soc_limits_cfg:
+                defaults = BatteryLimits()
+                limits = BatteryLimits(
+                    soc_lower_limit_1=soc_limits_cfg.get("lower_1", defaults.soc_lower_limit_1),
+                    soc_lower_limit_2=soc_limits_cfg.get("lower_2", defaults.soc_lower_limit_2),
+                    soc_upper_limit_1=soc_limits_cfg.get("upper_1", defaults.soc_upper_limit_1),
+                    soc_upper_limit_2=soc_limits_cfg.get("upper_2", defaults.soc_upper_limit_2),
+                )
 
             return BESSSimulator(
                 capacity_kwh=asset_cfg.get("capacity_kwh", 100.0),

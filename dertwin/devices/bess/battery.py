@@ -65,7 +65,7 @@ class BatteryModel:
 
         # Auto-scale electrical + thermal parameters with pack size when not
         # explicitly provided.
-        scale = capacity_kwh / self._AUTO_SCALE_REF_KWH if capacity_kwh > 0 else 1.0
+        scale = capacity_kwh / self._AUTO_SCALE_REF_KWH
 
         # Electrical
         self.internal_resistance = (
